@@ -47,8 +47,11 @@ This pipeline uses a frontier LLM with web search to label entities and align to
 
 ```bash
 export ANTHROPIC_API_KEY=...   # for annotation
+export OPENROUTER_API_KEY=...  # alternatively, use OpenRouter
 export HF_WRITE_TOKEN=...      # to push to HF datasets
 ```
+
+If `OPENROUTER_API_KEY` is set, the pipeline uses the OpenRouter API for LLM calls.
 
 Run (see `annotation_pipeline/README.md` and `run.py` for full arguments):
 

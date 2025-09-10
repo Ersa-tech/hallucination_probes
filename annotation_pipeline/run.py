@@ -34,7 +34,9 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 
 # Ensure required environment variables are set
-assert os.environ.get('ANTHROPIC_API_KEY', None) is not None, "ANTHROPIC_API_KEY is not set"
+openrouter_key = os.environ.get("OPENROUTER_API_KEY")
+if openrouter_key is None:
+    assert os.environ.get('ANTHROPIC_API_KEY', None) is not None, "ANTHROPIC_API_KEY is not set"
 assert os.environ.get('HF_WRITE_TOKEN', None) is not None, "HF_WRITE_TOKEN is not set (needed for pushing to HF hub)"
 
 LOCAL_RESULTS_DIR = Path(__file__).parent.parent / "annotation_pipeline_results"
@@ -343,12 +345,16 @@ async def main(cfg: PipelineConfig):
         logger.info("No items to process. All items have already been processed.")
         return
     
-    inference_api = InferenceAPI(
-        cache_dir=cfg.safetytooling_cache_dir,
-        anthropic_num_threads=cfg.max_concurrent_tasks,
-        openai_num_threads=cfg.max_concurrent_tasks,
-        deepseek_num_threads=cfg.max_concurrent_tasks,
-    )
+    if os.environ.get("OPENROUTER_API_KEY"):
+        from utils.openrouter_api import OpenRouterInferenceAPI
+        inference_api = OpenRouterInferenceAPI()
+    else:
+        inference_api = InferenceAPI(
+            cache_dir=cfg.safetytooling_cache_dir,
+            anthropic_num_threads=cfg.max_concurrent_tasks,
+            openai_num_threads=cfg.max_concurrent_tasks,
+            deepseek_num_threads=cfg.max_concurrent_tasks,
+        )
     
     if not cfg.parallel:
         # Sequential processing

@@ -46,8 +46,8 @@ def normalize_for_matching(text: str) -> str:
         r'(?<=[^\W\d_])(?<![MmXx])(?=\d)|(?<=\d)(?=[^\W\d_])', ' ', text)
 
     # Step 2: Remove quotes and punctuation (but preserve decimals)
-    # This combines quote removal with punctuation removal in one regex
-    text = re.sub(r'[\'"`''""‛„:;()\[\]\-–—]|[.,](?!(?<=\d[.,])\d)', ' ', text)
+    # Use a raw string with minimal escaping to avoid invalid escape warnings
+    text = re.sub(r"[\'\"`‛„:;()\[\]\-–—]|[.,](?!(?<=\d[.,])\d)", " ", text)
 
     # Step 3: Normalize whitespace and lowercase
     text = re.sub(r'\s+', ' ', text).strip().lower()
